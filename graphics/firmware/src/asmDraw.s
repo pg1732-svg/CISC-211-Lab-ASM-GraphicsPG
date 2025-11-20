@@ -2,8 +2,6 @@
 /* Tell the assembler to allow both 16b and 32b extended Thumb instructions */
 .syntax unified
 
-/*   #include <xc.h> */
-
 /* Declare the following to be in data memory  */
 .data  
 
