@@ -10,7 +10,7 @@
 .type nameStr,%gnu_unique_object
     
 /*** STUDENTS: Change the next line to your name!  **/
-nameStr: .asciz "Inigo Montoya"  
+nameStr: .asciz "Patrick Gonzales"  
 .align
  
 /* initialize a global variable that C can access to print the nameStr */
@@ -148,7 +148,34 @@ getNextFrame:
      *  animation frame. */
     
     /* STUDENT CODE BELOW THIS LINE vvvvvvvvvvvvvvvvvvv */
-    
+    MOV r4, 0
+row_loop:
+    MOV r5, 0
+column_loop:
+    LSLS r8, r4, 6
+    ADD r8, r8, r5
+    LDRB r9, [r6, r8]
+    ADD r10, r5, r0
+    CMP r10, 0
+    BLT blank
+    CMP r10, 64
+    BGE blank
+    LSLS r11, r4, 6
+    ADD r11, r11, r10
+    STRB r9, [r7, r11]
+    B next
+blank:
+    LSLS r11, r4, 6
+    ADD r11, r11, r5
+    MOVS r12, 0
+    STRB r12, [r7, r11]
+next:
+    ADD r5, r5, 1
+    CMP r5, 64
+    BLT column_loop
+    ADD r4, r4, 1
+    CMP r4, 20
+    BLT row_loop
     
     /* STUDENT CODE ABOVE THIS LINE ^^^^^^^^^^^^^^^^^^^ */
     
