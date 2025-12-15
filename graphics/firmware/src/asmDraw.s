@@ -148,6 +148,7 @@ getNextFrame:
      *  animation frame. */
     
     /* STUDENT CODE BELOW THIS LINE vvvvvvvvvvvvvvvvvvv */
+<<<<<<< HEAD
     AND r3, r2, 1
     CMP r3, 0
     BEQ use_buf0
@@ -180,6 +181,92 @@ copy_loop:
 shift_right:
     LSR r9, r9, r6
 store:
+=======
+    push {r4, r11, lr}
+   
+    
+    CMP r2, 1
+    BEQ reset
+    
+    LDR r3, =buf0
+    ADD r3, r3, 1280
+    LDR r4, [r3]
+    CMP r4, 0
+    BEQ bufzero
+bufone:
+    LDR r6, =buf1
+    LDR r7, =buf0
+    MOVS r5, 0
+    STR r5, [r3]
+    B shift
+bufzero:
+    LDR r6, =buf0
+    LDR r7, =buf1
+    MOVS r5, 1
+    STR r5, [r3]
+    
+    /* shift left to right */
+shift:
+    MOVS r4, 0
+row_loop:
+    MOVS r5, 0
+column_loop:
+    LSLS r8, r4, 6
+    ADD r8, r8, r5
+    LDRB r9, [r6, r8]
+    ADD r10, r5, r0
+    CMP r10, 0
+    BLT blank
+    CMP r10, 64
+    BGE blank
+    LSLS r11, r4, 6
+    ADD r11, r11, r10
+    STRB r9, [r7, r11]
+    B next
+blank:
+    /* write zero */
+    LSLS r11, r4, 6
+    ADD r11, r11, r5
+    MOVS r12, 0
+    STRB r12, [r7, r11]
+next:
+    ADDS r5, r5, 1
+    CMP r5, 64
+    BLT row_loop
+    CMP r5, 0
+    LDR r0, =buf0
+    LDR r1, [r3]
+    CMP r1, 1
+    BNE return
+    LDR r0, =buf1
+    pop {r4-r11, pc}
+return:
+    LDR r0, =buf0
+    pop {r4-r11, pc}
+reset:
+    LDR r0,=rowA00
+    LDR r1, =buf0
+    MOVS r2, 40
+reset_loop:
+    LDR r3, [r0], 4
+    STR r3, [r1], 4
+    SUBS r2, r2, 1
+    BNE reset_loop
+    LDR r1, =buf0
+    ADD r1, r1, 1280
+    MOV r2, 1
+    STR r2, [r1]
+    LDR r1, =buf1
+    ADD r1, r1, 1280
+    MOVS r2, 0
+    STR r2, [r1]
+    LDR r0, =buf0
+   
+    pop {r4-r11, pc}
+    
+    
+    BX lr
+>>>>>>> 46e4af18a35894be58e790d5a5ec8a40c807ce7f
     
     STR r9, [r0], 4
     SUBS r5, r5, 1
