@@ -148,35 +148,45 @@ getNextFrame:
      *  animation frame. */
     
     /* STUDENT CODE BELOW THIS LINE vvvvvvvvvvvvvvvvvvv */
-    MOV r4, 0
-row_loop:
-    MOV r5, 0
-column_loop:
-    LSLS r8, r4, 6
-    ADD r8, r8, r5
-    LDRB r9, [r6, r8]
-    ADD r10, r5, r0
-    CMP r10, 0
-    BLT blank
-    CMP r10, 64
-    BGE blank
-    LSLS r11, r4, 6
-    ADD r11, r11, r10
-    STRB r9, [r7, r11]
-    B next
-blank:
-    LSLS r11, r4, 6
-    ADD r11, r11, r5
-    MOVS r12, 0
-    STRB r12, [r7, r11]
-next:
-    ADD r5, r5, 1
-    CMP r5, 64
-    BLT column_loop
-    ADD r4, r4, 1
-    CMP r4, 20
-    BLT row_loop
+    AND r3, r2, 1
+    CMP r3, 0
+    BEQ use_buf0
+    LDR r0, =buf1
+    B copy
+use_buf0:
+    LDR r0, =buf0
+copy:
+    LDR r1, =rowA00
+    MOV r5, 40
+    MOV r4, r0
+   
+    AND r6, r2, 7
+    MOV r7, 4
+    CMP r6, r7
+    BLT shift_right
+    EOR r6, r6, 7
+    MOV r8, 1
+    B start_copy
+
+right_flag:
+    MOV r8, 0
+start_copy:
+copy_loop:
+    LDR r9, [r1], 4
+    CMP r8, 0
+    BEQ shift_right
+    LSL r9, r9, r6
+    B store
+shift_right:
+    LSR r9, r9, r6
+store:
     
+    STR r9, [r0], 4
+    SUBS r5, r5, 1
+    BNE copy_loop
+    MOV r0, r4
+    
+   
     
     /* STUDENT CODE ABOVE THIS LINE ^^^^^^^^^^^^^^^^^^^ */
     
