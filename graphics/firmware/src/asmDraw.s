@@ -148,9 +148,34 @@ getNextFrame:
      *  animation frame. */
     
     /* STUDENT CODE BELOW THIS LINE vvvvvvvvvvvvvvvvvvv */
-    MOV r4, 0
+    push {r4, r11, lr}
+   
+    
+    CMP r2, 1
+    BEQ reset
+    
+    LDR r3, =buf0
+    ADD r3, r3, 1280
+    LDR r4, [r3]
+    CMP r4, 0
+    BEQ bufzero
+bufone:
+    LDR r6, =buf1
+    LDR r7, =buf0
+    MOVS r5, 0
+    STR r5, [r3]
+    B shift
+bufzero:
+    LDR r6, =buf0
+    LDR r7, =buf1
+    MOVS r5, 1
+    STR r5, [r3]
+    
+    /* shift left to right */
+shift:
+    MOVS r4, 0
 row_loop:
-    MOV r5, 0
+    MOVS r5, 0
 column_loop:
     LSLS r8, r4, 6
     ADD r8, r8, r5
@@ -165,17 +190,48 @@ column_loop:
     STRB r9, [r7, r11]
     B next
 blank:
+    /* write zero */
     LSLS r11, r4, 6
     ADD r11, r11, r5
     MOVS r12, 0
     STRB r12, [r7, r11]
 next:
-    ADD r5, r5, 1
+    ADDS r5, r5, 1
     CMP r5, 64
-    BLT column_loop
-    ADD r4, r4, 1
-    CMP r4, 20
     BLT row_loop
+    CMP r5, 0
+    LDR r0, =buf0
+    LDR r1, [r3]
+    CMP r1, 1
+    BNE return
+    LDR r0, =buf1
+    pop {r4-r11, pc}
+return:
+    LDR r0, =buf0
+    pop {r4-r11, pc}
+reset:
+    LDR r0,=rowA00
+    LDR r1, =buf0
+    MOVS r2, 40
+reset_loop:
+    LDR r3, [r0], 4
+    STR r3, [r1], 4
+    SUBS r2, r2, 1
+    BNE reset_loop
+    LDR r1, =buf0
+    ADD r1, r1, 1280
+    MOV r2, 1
+    STR r2, [r1]
+    LDR r1, =buf1
+    ADD r1, r1, 1280
+    MOVS r2, 0
+    STR r2, [r1]
+    LDR r0, =buf0
+   
+    pop {r4-r11, pc}
+    
+    
+    BX lr
     
     
     /* STUDENT CODE ABOVE THIS LINE ^^^^^^^^^^^^^^^^^^^ */
